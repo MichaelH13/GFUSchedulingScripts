@@ -28,6 +28,7 @@ function onOpen() {
 
 function setupEventTaskList() {
 
+  var debugging = false;
   var numberOfTasks = 1000;
   var sheetName = "EventTaskList";
   var ss = SpreadsheetApp.getActive().getSheetByName(sheetName);
@@ -61,7 +62,7 @@ function setupEventTaskList() {
 
   // set formulas for the card access for each task
   for (var i = 2; i <= numberOfTasks; ++i) {
-    validationFormulas[i - 2] = [("=IFERROR(QUERY(Event!$A$2:$Z$200, \"SELECT L WHERE F = '\" & B2 & \"'\"), \"\")")];
+    validationFormulas[i - 2] = [("=IFERROR(QUERY(Event!$A$2:$Z$200, \"SELECT L WHERE F = '\" & B" + i + " & \"'\"), \"\")")];
     if (debugging) {Logger.log("Setting N" + i);}
   }
 
@@ -83,6 +84,7 @@ function setupEventTaskList() {
 // BI = DeptAssistant     = AA
 // BJ = HoursUsed         = IFERROR(IF($D50 <> "", INDEX(QUERY(EventTaskList!$B$1:$L$1068, "SELECT SUM(" & QUERY(EventTaskColumnNameMapping!$A$1:$B$1000,"SELECT A WHERE B = 'Hours'") & ") WHERE " & QUERY(EventTaskColumnNameMapping!$A$1:$B$1000, "SELECT A WHERE B = 'Student'") & " = '" & D & "'"),2,0),""),0)
 // BK = HoursRemaining    = K - BJ
+// BL = Card Access       = JOIN(",",TRANSPOSE(UNIQUE(QUERY(EventTaskList!$A$2:$N$1000, "SELECT N WHERE L = '" & F2 & "'"))))
 function setupStudentAvailability() {
   var numberOfStudents = 300;
   var sheetName = "StudentAvailability";
@@ -229,5 +231,19 @@ function setupStudentAvailability() {
 
   // ROW BK
   ss.getRange("BK2:BK" + numberOfStudents).setFormulas(formulas);
+
+  formulas = new Array();
+
+  // ROW BL
+  // build the Card Access formulas
+  for (var i = 2; i <= numberOfStudents; ++i) {
+
+    // this must put an array at formulas[i - 2]
+    formulas[i - 2] = [("=IFERROR(JOIN(\",\",TRANSPOSE(UNIQUE(QUERY(EventTaskList!$A$2:$N$1000, \"SELECT N WHERE L = '\" & F" + i + " & \"'\")))),\"\")")];
+    if (debugging) {Logger.log(formulas[i - 2]);}
+  }
+
+  // ROW BL
+  ss.getRange("BL2:BL" + numberOfStudents).setFormulas(formulas);
 }
   
