@@ -28,15 +28,15 @@ function onOpen() {
 
 function setupEventTaskList() {
 
-  var debugging = false;
   var numberOfTasks = 1000;
   var sheetName = "EventTaskList";
   var ss = SpreadsheetApp.getActive().getSheetByName(sheetName);
   var validationFormulas = new Array()
   var studentDropdownRange = ss.getRange("L2:L" + numberOfTasks);
-  var listOfStudentsRange = ss.getRange("N2:N" + numberOfTasks);
+  var listOfStudentsRange = ss.getRange("P2:P" + numberOfTasks);
+  var cardAccessRange = ss.getRange("N2:N" + numberOfTasks);
 
-  // ROW N
+  // ROW P
   // set list students available before setting up dropdown selection
   for (var i = 2; i <= numberOfTasks; ++i) {
 
@@ -51,11 +51,21 @@ function setupEventTaskList() {
 
   // set data validation for the EventTaskList (student selection)
   for (var i = 2; i <= numberOfTasks; ++i) {
-    validationFormulas[i - 2] = [SpreadsheetApp.newDataValidation().requireValueInRange(ss.getRange("N" + i + ":LJ" + i), true).setAllowInvalid(false).build()];
+    validationFormulas[i - 2] = [SpreadsheetApp.newDataValidation().requireValueInRange(ss.getRange("P" + i + ":LL" + i), true).setAllowInvalid(false).build()];
     if (debugging) {Logger.log("Setting L" + i);}
   }
 
   studentDropdownRange.setDataValidations(validationFormulas);
+
+  validationFormulas = new Array();
+
+  // set formulas for the card access for each task
+  for (var i = 2; i <= numberOfTasks; ++i) {
+    validationFormulas[i - 2] = [("=IFERROR(QUERY(Event!$A$2:$Z$200, \"SELECT L WHERE F = '\" & B2 & \"'\"), \"\")")];
+    if (debugging) {Logger.log("Setting N" + i);}
+  }
+
+  cardAccessRange.setFormulas(validationFormulas);
 }
 
 // columns:
