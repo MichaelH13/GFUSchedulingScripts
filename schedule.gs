@@ -84,7 +84,7 @@ function setupEventTaskList() {
 // BI = DeptAssistant     = AA
 // BJ = HoursUsed         = IFERROR(IF($D50 <> "", INDEX(QUERY(EventTaskList!$B$1:$L$1068, "SELECT SUM(" & QUERY(EventTaskColumnNameMapping!$A$1:$B$1000,"SELECT A WHERE B = 'Hours'") & ") WHERE " & QUERY(EventTaskColumnNameMapping!$A$1:$B$1000, "SELECT A WHERE B = 'Student'") & " = '" & D & "'"),2,0),""),0)
 // BK = HoursRemaining    = K - BJ
-// BL = Card Access       = JOIN(",",TRANSPOSE(UNIQUE(QUERY(EventTaskList!$A$2:$N$1000, "SELECT N WHERE L = '" & F2 & "'"))))
+// BL = Card Access       = IFERROR(JOIN(",",TRANSPOSE(UNIQUE(QUERY(EventTaskList!$A$2:$N$1000, "SELECT N WHERE L = '" & F2 & "'")))),"")
 function setupStudentAvailability() {
   var numberOfStudents = 300;
   var sheetName = "StudentAvailability";
